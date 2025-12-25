@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kingshot 5 mins Rally Calculator (Created by Anthea)</title>
+    <style>
+        /* Basic Styles - Blue/Yellow/White Theme */
+        body { 
+            font-family: 'Roboto', 'Arial', sans-serif; 
+            margin: 5px; 
+            background-color: #172a45; /* Deep Blue Background */
+            color: #e6f1ff; /* Light/White Text */
+        }
+        h2 { 
+            text-align: center; 
+            color: #ffd700; /* Yellow Accent */
+            font-size: 1.4em; 
+            margin-bottom: 5px; /* 縮小底部間距，讓作者資訊更靠近標題 */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 調整作者資訊樣式：置中對齊 */
+        .author-info {
+            text-align: center;
+            font-size: 0.9em;
+            color: #a0aec0; /* 稍微淡一點的顏色 */
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .time-display, .arrival-setting { 
+            margin-bottom: 10px; 
+            padding: 12px; 
+            background-color: #233554; /* Lighter Blue Container */
+            border: 1px solid #304775; 
+            border-radius: 8px; 
+            font-size: 0.9em; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .quick-arrival-buttons { 
+            margin-top: 15px; 
+            padding-top: 15px; 
+            border-top: 1px dashed #4a6fa5; 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .quick-arrival-buttons label { 
+            width: 100%; 
+            margin-bottom: 10px; 
+            font-weight: bold; 
+            font-size: 0.95em; 
+            color: #ffd700; 
+        }
+        
+        .manual-sec-input-group {
+            display: flex;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .manual-sec-input {
+            flex-grow: 1;
+            margin-right: 8px;
+            padding: 8px;
+            font-size: 13px;
+            background-color: #304775; 
+            color: #ffffff;
+            border: 1px solid #4a6fa5;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px; 
+            font-size: 12px; 
+            background-color: #233554;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        th, td { 
+            border: 1px solid #304775; 
+            padding: 8px 4px; 
+            text-align: center; 
+            white-space: nowrap;
+            color: #e6f1ff;
+        }
+        th { 
+            background-color: #0d1b2a; 
+            color: #ffd700; 
+            font-weight: bold; 
+            text-transform: uppercase;
+        }
+        
+        input[type="text"], input[type="number"], input[type="time"], select {
+            background-color: #304775;
+            color: #ffffff;
+            border: 1px solid #4a6fa5;
+            border-radius: 4px;
+            padding: 4px;
+        }
+        input[type="time"] { padding: 6px; }
+
+        .name-input { width: 95%; box-sizing: border-box; text-align: center; font-size: 12px; }
+        .march-input { width: 40px; box-sizing: border-box; text-align: center; font-size: 12px; } 
+        .adjustment-select { width: 45px; box-sizing: border-box; font-size: 12px; padding: 2px; } 
+        
+        .rally-start { font-weight: bold; color: #ffd700; font-size: 13px; }
+        .countdown { font-weight: bold; font-size: 13px; }
+        #targetArrivalTime { font-size: 1.1em; font-weight: bold;}
+        #currentTime { color: #ffd700 !important; } 
+
+        .quick-arrival-buttons button, 
+        .manual-sec-input-group button,
+        #copyTargetTime, 
+        body > button {
+            background-color: #2196f3; 
+            color: white; 
+            border: none; 
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .quick-arrival-buttons button:hover, 
+        .manual-sec-input-group button:hover,
+        #copyTargetTime:hover, 
+        body > button:hover {
+            background-color: #ffd700; 
+            color: #0d1b2a; 
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+        
+        .quick-arrival-buttons button { 
+            flex-grow: 1; 
+            margin: 4px; 
+            padding: 10px 5px; 
+            font-size: 13px; 
+        }
+        .manual-sec-input-group button {
+            flex-grow: 0;
+            width: 90px;
+            margin-left: 4px;
+        }
+
+        #copyTargetTime { padding: 12px 15px; margin-top: 15px; width: 100%; font-size: 1.1em;}
+        body > button { margin-top: 15px; padding: 12px 20px; font-size: 14px; }
+        
+        button[onclick="clearAllData()"] {
+             background-color: #ffd700; color: #0d1b2a;
+        }
+        button[onclick="clearAllData()"]:hover {
+             background-color: #ffca28; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+
+        #playerTable button { 
+            padding: 4px 8px;
+            background-color: #ff5252; 
+            color: white;
+            font-weight: bold;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        #playerTable button:hover { background-color: #d32f2f; }
+
+        .order, .order-header { display: none; }
+    </style>
+</head>
+<body onload="init()">
+
+    <h2>Kingshot 5 mins Rally Calculator</h2>
+    <div class="author-info">#45 · END · Anthea瀞</div>
+
+    <div class="time-display">
+        Current UTC Time: <span id="currentTime" style="font-size: 1.2em; font-weight: bold;">--:--:--</span>
+    </div>
+
+    <div class="arrival-setting">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <span style="font-weight: bold; color: #ffd700;">Arrival Time (UTC):</span>
+            <input type="time" id="targetArrivalTime" step="1" onchange="calculateAllRallyTimes()" value="00:00:00">
+        </div>
+        
+        <button id="copyTargetTime" onclick="copyRallyTimes()">Copy Rally Info</button>
+        
+        <div class="quick-arrival-buttons">
+            <label>Quick Set Arrival Time (Now UTC + 5m + Xs):</label>
+            <button onclick="setQuickArrivalTime(30)">+30s</button>
+            <button onclick="setQuickArrivalTime(60)">+60s</button>
+            <button onclick="setQuickArrivalTime(90)">+90s</button>
+            <button onclick="setQuickArrivalTime(120)">+120s</button>
+            
+            <div class="manual-sec-input-group">
+                <input type="number" id="manualSecInput" class="manual-sec-input" min="0" max="999" value="0" placeholder="Manual Seconds">
+                <button onclick="setManualQuickArrivalTime()">Manual Set</button>
+            </div>
+        </div>
+    </div>
+
+    <table id="playerTable">
+        <thead>
+            <tr>
+                <th style="width: 5%;">☰</th>
+                <th class="order-header" style="width: 5%;">Order</th>
+                <th style="width: 25%;">Name</th>
+                <th style="width: 12%;">March Time</th>
+                <th style="width: 8%;">Adjust</th>
+                <th style="width: 20%;">Launch Time</th>
+                <th style="width: 20%;">Countdown</th>
+                <th style="width: 5%;">Action</th>
+            </tr>
+        </thead>
+        <tbody id="playerList">
+            </tbody>
+    </table>
+
+    <div style="display: flex; justify-content: space-between;">
+        <button onclick="addPlayer()" style="flex-grow: 2; margin-right: 10px;">Add Player</button>
+        <button onclick="clearAllData()" style="flex-grow: 1;">Clear All Data</button>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'kingshotRallyData_v3_en';
+        let playerCounter = 0;
+        let rallyStartTimes = [];
+
+        function savePlayersToStorage() {
+            const playersData = [];
+            document.querySelectorAll('#playerList tr').forEach(row => {
+                playersData.push({
+                    id: parseInt(row.dataset.id),
+                    name: row.querySelector('.name-input').value,
+                    march: parseInt(row.querySelector('.march-input').value) || 0,
+                    adjustment: parseInt(row.querySelector('.adjustment-select').value) || 0,
+                });
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(playersData));
+        }
+
+        function loadPlayersFromStorage() {
+            const storedData = localStorage.getItem(STORAGE_KEY);
+            if (!storedData) return false;
+            const playersData = JSON.parse(storedData);
+            if (playersData.length === 0) return false;
+            const tableBody = document.getElementById('playerList');
+            tableBody.innerHTML = '';
+            playersData.forEach(data => {
+                playerCounter = Math.max(playerCounter, data.id);
+                const row = tableBody.insertRow();
+                row.dataset.id = data.id; 
+                const adjustmentOptions = Array.from({length: 21}, (_, i) => 
+                    `<option value="${i}" ${i === data.adjustment ? 'selected' : ''}>${i}</option>`
+                ).join('');
+                row.innerHTML = `
+                    <td>☰</td>
+                    <td class="order">${data.id}</td>
+                    <td><input type="text" class="name-input" value="${data.name.replace(/"/g, '&quot;')}" onchange="calculateRallyTime(this)"></td>
+                    <td><input type="number" class="march-input" min="0" max="999" value="${data.march}" oninput="calculateRallyTime(this)"></td> 
+                    <td>
+                        <select class="adjustment-select" onchange="calculateRallyTime(this)">
+                            ${adjustmentOptions}
+                        </select>
+                    </td>
+                    <td class="rally-start">--:--:--</td>
+                    <td class="countdown">--:--:--</td>
+                    <td><button onclick="removePlayer(this)">X</button></td>
+                `;
+                rallyStartTimes.push({ id: data.id, date: null });
+            });
+            calculateAllRallyTimes();
+            return true;
+        }
+        
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all player data?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                document.getElementById('playerList').innerHTML = '';
+                rallyStartTimes = [];
+                playerCounter = 0;
+                addPlayer();
+            }
+        }
+
+        function formatTime(date) {
+            const hours = String(date.getUTCHours()).padStart(2, '0');
+            const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+        
+        function copyRallyTimes() {
+            const rows = document.querySelectorAll('#playerList tr');
+            const targetTimeStr = document.getElementById('targetArrivalTime').value;
+            let contentToCopy = `🕐 Kingshot Rally - Target Arrival: ${targetTimeStr} (UTC)\n\n`;
+            let validEntryFound = false;
+            rows.forEach(row => {
+                const name = row.querySelector('.name-input').value.trim() || 'Unnamed Player';
+                const rallyTime = row.querySelector('.rally-start').textContent;
+                if (rallyTime && rallyTime !== '--:--:--') {
+                    contentToCopy += `${name} → Launch ${rallyTime}\n`;
+                    validEntryFound = true;
+                }
+            });
+            if (!validEntryFound) return alert('No data to copy!');
+            navigator.clipboard.writeText(contentToCopy).then(() => alert('Copied!'));
+        }
+
+        function addPlayer() {
+            playerCounter++;
+            const tableBody = document.getElementById('playerList');
+            const row = tableBody.insertRow();
+            row.dataset.id = playerCounter; 
+            const adjustmentOptions = Array.from({length: 21}, (_, i) => `<option value="${i}">${i}</option>`).join('');
+            row.innerHTML = `
+                <td>☰</td>
+                <td class="order">${playerCounter}</td>
+                <td><input type="text" class="name-input" value="" onchange="calculateRallyTime(this)"></td>
+                <td><input type="number" class="march-input" min="0" max="999" value="0" oninput="calculateRallyTime(this)"></td> 
+                <td><select class="adjustment-select" onchange="calculateRallyTime(this)">${adjustmentOptions}</select></td>
+                <td class="rally-start">--:--:--</td>
+                <td class="countdown">--:--:--</td>
+                <td><button onclick="removePlayer(this)">X</button></td>
+            `;
+            rallyStartTimes.push({ id: playerCounter, date: null }); 
+            calculateAllRallyTimes();
+        }
+
+        function removePlayer(button) {
+            const row = button.closest('tr');
+            rallyStartTimes = rallyStartTimes.filter(item => item.id !== parseInt(row.dataset.id)); 
+            row.remove();
+            savePlayersToStorage();
+        }
+        
+        function calculateAllRallyTimes() {
+            document.querySelectorAll('#playerList tr').forEach(row => calculateRallyTime(row.querySelector('.march-input')));
+            savePlayersToStorage();
+        }
+
+        function calculateRallyTime(element) {
+            const row = element.closest('tr');
+            const targetTimeStr = document.getElementById('targetArrivalTime').value;
+            const marchSeconds = parseInt(row.querySelector('.march-input').value) || 0; 
+            const adjustmentSec = parseInt(row.querySelector('.adjustment-select').value) || 0; 
+            const [targetH, targetM, targetS] = targetTimeStr.split(':').map(Number);
+            const now = new Date();
+            let targetDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), targetH, targetM, targetS));
+            if (targetDate.getTime() < now.getTime() - 1000) targetDate.setUTCDate(targetDate.getUTCDate() + 1);
+            const rallyStartMs = targetDate.getTime() + (adjustmentSec * 1000) - (marchSeconds * 1000) - (5 * 60 * 1000);
+            const rallyStartDate = new Date(rallyStartMs);
+            row.querySelector('.rally-start').textContent = formatTime(rallyStartDate);
+            const entry = rallyStartTimes.find(item => item.id === parseInt(row.dataset.id));
+            if (entry) entry.date = rallyStartDate;
+            updateCountdown(row, rallyStartDate);
+        }
+
+        function updateCountdown(row, rallyStartDate) {
+            const countdownCell = row.querySelector('.countdown');
+            const timeDiffMs = rallyStartDate.getTime() - new Date().getTime();
+            if (timeDiffMs <= 0) {
+                countdownCell.textContent = "Launched";
+                countdownCell.style.color = '#ff5252';
+            } else {
+                const s = Math.floor(timeDiffMs / 1000);
+                countdownCell.textContent = `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor((s%3600)/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+                countdownCell.style.color = '#ffd700';
+            }
+        }
+        
+        function updateCurrentTime() {
+            document.getElementById('currentTime').textContent = formatTime(new Date());
+            document.querySelectorAll('#playerList tr').forEach(row => {
+                const entry = rallyStartTimes.find(item => item.id === parseInt(row.dataset.id));
+                if (entry && entry.date) updateCountdown(row, entry.date);
+            });
+        }
+
+        function setQuickArrivalTime(sec) {
+            const t = new Date(Date.now() + (5 * 60 * 1000) + (sec * 1000));
+            document.getElementById('targetArrivalTime').value = formatTime(t);
+            calculateAllRallyTimes(); 
+        }
+
+        function setManualQuickArrivalTime() {
+            setQuickArrivalTime(parseInt(document.getElementById('manualSecInput').value) || 0);
+        }
+
+        function init() {
+            setInterval(updateCurrentTime, 1000); 
+            if (!loadPlayersFromStorage()) addPlayer();
+        }
+    </script>
+</body>
+</html>
